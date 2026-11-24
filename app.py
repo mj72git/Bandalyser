@@ -740,7 +740,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     y='(Target) Number of 3A contacts Residues',
                     title='Number of target residues that have 3Å contacts ',
                     labels={
-                        p: 'Number of 3Å Contacts', 'design_id': 'Design id'
+                        p: 'Number of 3Å contacts', 'design_id': 'Design id'
                     }
                 )
 
@@ -768,7 +768,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     y='(Target) Number of 4A contacts Residues',
                     title='Number of target residues that have 4Å contacts ',
                     labels={
-                        p: 'Number of 4Å Contacts', 'design_id': 'Design id'
+                        p: 'Number of 4Å contacts', 'design_id': 'Design id'
                     }
                 )
 
@@ -795,7 +795,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     y='(Target) Number of hydrophobic contacts Residues',
                     title='Number of target residues that have hydrophobic contacts ',
                     labels = {
-                        p : 'Number of hydrophobic Contacts', 'design_id' : 'Design id'
+                        p : 'Number of hydrophobic contacts', 'design_id' : 'Design id'
                     }
                 )
                 fig_contacts.update_yaxes(
@@ -824,7 +824,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     y='(Target) Number of salt bridge contacts Residues',
                     title='Number of target residues that have salt bridge contacts ',
                     labels={
-                        p: 'Number of salt bridge Contacts', 'design_id': 'Design id'
+                        p: 'Number of salt bridge contacts', 'design_id': 'Design id'
                     }
                 )
                 fig_contacts.update_traces(width=bar_width)
