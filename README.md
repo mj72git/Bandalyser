@@ -1,5 +1,5 @@
 
-# PDB Analyzer Web App 
+# Bandalyser Web App 
 
 This is a Streamlit-based web application for analyzing **PDB files**, exploring **interface metrics**, and visualizing **3D protein structures**.
 
@@ -11,7 +11,7 @@ This tool helps you interpret the results generated after running Protein Design
 ---
 
 ## Getting Started
-### Accessing the PDB Analyzer Web App
+### Accessing the Bandalyser Web App
 This application is hosted on Streamlit Cloud, providing easy access without any local installation required. The link :
 https://pdbanalyzermjshadfar.streamlit.app/
 
@@ -91,11 +91,11 @@ If you want to install it locally:
 
 
 git clone https://github.com/mj72git/PDB-Analyzer.git
-cd PDB-Analyzer-main
+cd Bandalyser-main
 
-conda create -n pdb_analyser_env python=3.9 -y
+conda create -n Bandalyser_env python=3.9 -y
 
-conda activate pdb_analyser_env
+conda activate Bandalyser_env
 
 pip install -r requirements.txt
 
