@@ -738,7 +738,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                     #y = 'n_contacts_3A_Residues',
                     y='(Target) Number of 3A contacts Residues',
-                    title='Number of target residues that have 3Å Contacts ',
+                    title='Number of target residues that have 3Å contacts ',
                     labels={
                         p: 'Number of 3Å Contacts', 'design_id': 'Design id'
                     }
@@ -766,7 +766,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                     #y='n_contacts_4A_Residues',
                     y='(Target) Number of 4A contacts Residues',
-                    title='Number of target residues that have 4Å Contacts ',
+                    title='Number of target residues that have 4Å contacts ',
                     labels={
                         p: 'Number of 4Å Contacts', 'design_id': 'Design id'
                     }
@@ -793,7 +793,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                     #y='n_hydrophobic_contacts_Residues',
                     y='(Target) Number of hydrophobic contacts Residues',
-                    title='Number of target residues that have hydrophobic Contacts ',
+                    title='Number of target residues that have hydrophobic contacts ',
                     labels = {
                         p : 'Number of hydrophobic Contacts', 'design_id' : 'Design id'
                     }
@@ -822,7 +822,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                     #y='n_salt_bridge_Residues',
                     y='(Target) Number of salt bridge contacts Residues',
-                    title='Number of target residues that have salt bridge Contacts ',
+                    title='Number of target residues that have salt bridge contacts ',
                     labels={
                         p: 'Number of salt bridge Contacts', 'design_id': 'Design id'
                     }
@@ -848,7 +848,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                     #y='n_pi_pi_contacts',
                     y='(Target) Number of pi-pi contacts',
-                    title='Number of target residues that have pi-pi Contacts ',
+                    title='Number of target residues that have pi-pi contacts ',
                     labels={
                         p: 'Number of pi-pi Contacts', 'design_id': 'Design id'
                     }
@@ -877,7 +877,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x='design_id',
                    # y='n_cation_pi_contacts',
                     y='(Target) Number of cation-pi contacts',
-                    title='Number of target residues that have cation-pi Contacts ',
+                    title='Number of target residues that have cation-pi contacts ',
                     labels={
                         p: 'Number of cation-pi Contacts', 'design_id': 'Design id'
                     }
@@ -1022,7 +1022,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 ############################################################################################################################
 ############################################################################################################################
     with tab5:
-        st.subheader("Binder Analysis Overall")
+        st.subheader("Binder analysis overall")
 
         # ensure df is defined
         df = st.session_state.df_out
@@ -1032,7 +1032,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
             p = 'binder_hydrophobic_res_fraction'
             counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
             if counts.sum() == 0:
-                st.info(f"No  hydrophobic Residues  found  for the analyzed binder designs.")
+                st.info(f"No  hydrophobic residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
 
@@ -1042,7 +1042,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_hydrophobic_res_fraction',
-                    title='        Binder Hydrophobicity for all designs (%)',
+                    title='        Binder hydrophobicity for all designs (%)',
                     labels={
                         p: 'Percentage (%)', 'design_id': 'Design id'
                     }
@@ -1063,7 +1063,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
             p = 'binder_positive_res_fraction'
             counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
             if counts.sum() == 0:
-                st.info(f"No  Positive Charged Residues  found  for the analyzed binder designs.")
+                st.info(f"No  positive charged residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
 
@@ -1073,7 +1073,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_positive_res_fraction',
-                    title='        Binder Basic Residues for all designs (%)',
+                    title='        Binder basic residues for all designs (%)',
                     labels={
                         p: 'Percentage (%)', 'design_id': 'Design id'
                     }
@@ -1095,7 +1095,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
             p = 'binder_negative_res_fraction'
             counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
             if counts.sum() == 0:
-                st.info(f"No  Negative Charged Residues  found  for the analyzed binder designs.")
+                st.info(f"No  Negative charged residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
 
@@ -1105,7 +1105,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_negative_res_fraction',
-                    title='        Binder Acidic Residues for all designs (%)',
+                    title='        Binder acidic residues for all designs (%)',
                     labels={
                         p: 'Percentage (%)', 'design_id': 'Design id'
                     }
@@ -1127,7 +1127,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
             p = 'binder_aromatic_res_fraction'
             counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
             if counts.sum() == 0:
-                st.info(f"No  Aromatic Residues  found  for the analyzed binder designs.")
+                st.info(f"No  aromatic residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
 
@@ -1137,7 +1137,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_aromatic_res_fraction',
-                    title='        Binder Aromatic Residues for all designs (%)',
+                    title='        Binder aromatic residues for all designs (%)',
                     labels={
                         p:'Percentage (%)', 'design_id':'Design id'
                     }
@@ -1161,7 +1161,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
     with tab6:
 
         if  shift ==0  and check_box_family:
-            st.subheader("Overall Analysis of Designs")
+            st.subheader("Overall analysis of designs")
             def analysis_final(df_col_name):
                 analysis_final = []
                 for _, row in st.session_state.df_out.iterrows():
@@ -1408,7 +1408,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         elif (shift != 0 or check_box_multi_target_examples ) and check_box_family:
 
-            st.subheader("Overall Analysis of Designs for multichain target")
+            st.subheader("Overall analysis of designs for multichain target")
 
 
             def analysis_final_multi(df_col_name):
