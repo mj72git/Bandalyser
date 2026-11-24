@@ -1,0 +1,3 @@
+In the 'Identify Key Interactions' box, maybe remove 'Contacts' from 'Hydrophobic Contacts' so it all fits in the box? As the box title includes "Interactions", I think it's clear that's what Hydrophobic refers to.
+In the 'Calculate Binder Metrics' box, I don't think "Sequence" is a metric, and it's not something we calculate, it's simply a property of the binder. I think I'd just leave it out of this box.
+In the 'Aggregate Results' box, I'd remove '(DataFrames)' from the title - I assume this is there because you store the data as a pandas dataframe, but I don't think that kind of information belongs in this figure.

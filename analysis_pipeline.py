@@ -484,7 +484,7 @@ def binder_analysis(binder):
 ################################################################################################################
 ################################################################################################################
 
-def analyze_design(pdb_path, target_chain='A', binder_chain='B', add_target_res_offset=0, freesasa_available=False, shift = 0,
+def analyze_design(pdb_path, target_chain='A', binder_chain='B', add_target_res_offset=0, shift = 0,
                    tmpdir=None, dist_threshod=4.0):
     """Analyze a single design PDB file. Returns dict of computed metrics."""
     out = {}

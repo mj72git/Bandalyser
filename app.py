@@ -81,9 +81,9 @@ except ImportError:
 
 from analysis_pipeline import analyze_design
 from helper import *
-st.set_page_config(page_title="PDB Analyser", page_icon="image.ico", layout="wide")
+st.set_page_config(page_title="Bindalyser", page_icon="image.ico", layout="wide")
 
-st.title("PDB Analyser Web Application")
+st.title("Bindalyser Web Application")
 ################################################################################
 ################################################################################
 
@@ -132,13 +132,13 @@ st.sidebar.download_button(
     mime="text/plain"
 )
 mj = st.sidebar.header("App created by MJ Shadfar")
-st.sidebar.markdown("#### currently a PhD candidate in A/Prof Jane Allison’s group, School of Biological Science, University of Auckland. ")
+#st.sidebar.markdown("#### currently a PhD candidate in A/Prof Jane Allison’s group, School of Biological Science, University of Auckland. ")
 st.sidebar.caption(" [Linkedin Profile](https://www.linkedin.com/in/mj-shadfar-3919b5b8/)")
-st.sidebar.write(" [Github Repository](https://github.com/mj72git/PDB-Analyzer)")
-st.sidebar.caption("PDB Analyser v1.3")
+st.sidebar.write(" [Github Repository](https://github.com/mj72git/Bandalyser)")
+st.sidebar.caption("Bindalyser")
 st.sidebar.caption("")
-st.sidebar.caption("Last modified: 17 Nov 2026")
-st.set_page_config(page_title="PDB Analyser", layout="wide")
+st.sidebar.caption("Last modified: 24 Nov 2026")
+#st.set_page_config(page_title="PDB Analyser", layout="wide")
 st.sidebar.image("uoa.jpg", width=200)
 st.sidebar.image("image.png", width=150)
 
@@ -244,7 +244,7 @@ if not st.session_state.analysis_done:
             r = analyze_design(pdb_path, target_chain=target_chain, binder_chain=binder_chain,
                                add_target_res_offset=add_target_res_offset, shift=shift,
                                tmpdir=os.path.dirname(pdb_path) if file_flag == 'example' else tmpdir,
-                               dist_threshod=4)
+                               dist_threshod=4.0)
 
             #base = os.path.splitext(os.path.basename(pdb_path))[0]
             record = {'design_id': base}
@@ -255,11 +255,13 @@ if not st.session_state.analysis_done:
                 'target_seq': r.get('target_seq'),
                 'pairs_3A': r.get('pairs_3A'),
                 'pairs3_multichain_mode': r.get('pairs3_multi'),
-                '3A_Residues': r.get('3A_Residues'),
+                #'3A_Residues': r.get('3A_Residues'),
+                'Target 3A Residues': r.get('3A_Residues'),
                 'n_contacts_3A_Residues' : r.get('n_contacts_3A_Residues'),
                 'pairs_4A': r.get('pairs_4A'),
                 'pairs4_multichain_mode': r.get('pairs4_multi'),
-                '4A_Residues': r.get('4A_Residues'),
+                #'4A_Residues': r.get('4A_Residues'),
+                'Target 4A Residues': r.get('4A_Residues'),
                 'n_contacts_4A_Residues': r.get('n_contacts_4A_Residues'),
                 'hydrophobic_contacts' : r.get('hypho'),
                 'n_hydrophobic_contacts_ATOM': r.get('n_hypho_list'),
@@ -316,15 +318,51 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
     with tab1:
         st.subheader("Analysis Summary")
         df_display = st.session_state.df_out.copy()
-        for col in ['binder_length','binder_hydrophobic_res','binder_hydrophobic_res_fraction','binder_hydrophobic_res_interface','binder_hydrophobic_res_fraction_interface',
-                    'binder_positive_res','binder_positive_res_fraction', 'binder_positive_res_interface','binder_positive_res_fraction_interface','binder_negative_res','binder_negative_res_fraction',
-                    'binder_negative_res_interface','binder_negative_res_fraction_interface','hbonds_target_to_binder','hbonds_binder_to_target',
-                    'pairs3_multichain_mode', 'pairs4_multichain_mode', 'hydrophobic_Residues_multichain_mode', 'salt_bridge_Residues_multichain_mode',
-                    'binder_aromatic_res','binder_aramotic_res_fraction','binder_aromatic_res_interface', 'binder_aromatic_res_fraction_interface','Average_pLDDT','pairs_3A', 'n_salt_bridge_Residues','n_contacts_3A_Residues','n_contacts_4A_Residue','pairs_4A', 'hydrophobic_contacts', 'salt_bridge', 'pi_pi_contacts', 'cation_pi_contacts']:
-            if col in df_display.columns:
-                df_display[col] = df_display[col].apply(lambda x: str(x))
-        st.dataframe(df_display)
-        st.download_button("Download Summary CSV", st.session_state.df_out.to_csv(index=False), "summary.csv")
+        df_display = df_display.drop(columns = ['pairs_3A', 'pairs3_multichain_mode', 'pairs_4A', 'pairs4_multichain_mode','hydrophobic_Residues_multichain_mode',
+                                                'hydrophobic_contacts', 'salt_bridge', 'pi_pi_contacts','cation_pi_contacts',
+                                                'hbonds_target_to_binder', 'hbonds_binder_to_target', 'binder_hydrophobic_res',
+                                                'binder_hydrophobic_res_fraction', 'binder_hydrophobic_res_interface',
+                                                'binder_hydrophobic_res_fraction_interface', 'binder_positive_res', 'salt_bridge_Residues_multichain_mode',
+                                                'binder_positive_res_fraction', 'binder_positive_res_interface', 'binder_positive_res_fraction_interface',
+                                                'binder_negative_res', 'binder_negative_res_fraction', 'binder_negative_res_interface',
+                                                'binder_negative_res_fraction_interface', 'binder_aromatic_res', 'binder_aromatic_res_fraction',
+                                                'binder_aromatic_res_interface', 'binder_aromatic_res_fraction_interface'])
+        st.session_state.df_display = df_display
+
+        for col in df_display.columns:
+            df_display[col] = df_display[col].apply(lambda x: str(x))
+
+        st.session_state.df_display = df_display.rename(columns = {'Target 3A Residues' : '(Target) 3A Residues', 'Target 4A Residues' : '(Target) 4A Residues',
+                                                                   'binder_length' : 'Binder Length', 'n_contacts_3A_Atom' : '(Target) Number of 3A contacts Atoms',
+                                                                   'n_contacts_4A_Atom': '(Target) Number of 4A contacts Atoms', 'target_seq' : 'Target Sequence',
+                                                                   'n_contacts_3A_Residues' : '(Target) Number of 3A contacts Residues',
+                                                                   'n_contacts_4A_Residues' : '(Target) Number of 4A contacts Residues',
+                                                                   'n_hydrophobic_contacts_ATOM' : '(Target) Number of hydrophobic contacts Atoms',
+                                                                   'n_hydrophobic_contacts_Residues' : '(Target) Number of hydrophobic contacts Residues',
+                                                                   'hydrophobic_contacts_Residues' : '(Target) hydrophobic contacts Residues',
+                                                                   #'hydrophobic_Residues_multichain_mode' : '(Target) hydrophobic contacts Residues Multichain Mode',
+                                                                   'n_salt_bridge_ATOM' : '(Target) Number of salt bridge contacts Atoms',
+                                                                   'n_salt_bridge_Residues' : '(Target) Number of salt bridge contacts Residues',
+                                                                   'salt_bridge_contacts_Residues' : '(Target) salt bridge contacts Residues',
+                                                                   #'salt_bridge_Residues_multichain_mode' : '(Target) salt bridge contacts Residues Multichain Mode',
+                                                                   'n_pi_pi_contacts' : '(Target) Number of pi-pi contacts', 'n_cation_pi_contacts' : '(Target) Number of cation-pi contacts',
+                                                                   'binder_seq' : 'Binder Sequence'})
+
+        st.session_state.df_display = st.session_state.df_display[['design_id','Binder Length','(Target) Number of 3A contacts Atoms',
+                                                  '(Target) Number of 3A contacts Residues', '(Target) 3A Residues','(Target) Number of 4A contacts Atoms',
+                                                  '(Target) Number of 4A contacts Residues', '(Target) 4A Residues','(Target) Number of hydrophobic contacts Atoms',
+                                                  '(Target) Number of hydrophobic contacts Residues','(Target) hydrophobic contacts Residues',
+                                                  #'(Target) hydrophobic contacts Residues Multichain Mode',
+                                                  '(Target) Number of salt bridge contacts Atoms','(Target) Number of salt bridge contacts Residues',
+                                                  '(Target) salt bridge contacts Residues',
+                                                                   #'(Target) salt bridge contacts Residues Multichain Mode',
+                                                  '(Target) Number of pi-pi contacts','(Target) Number of cation-pi contacts', 'Number of All H bonds',
+                                                  'Target Sequence','Binder Sequence']]
+
+
+        st.dataframe(st.session_state.df_display)
+        st.download_button("Download Summary CSV", st.session_state.df_display.to_csv(index=False), "summary.csv")
+
 
 ############################################################################################################################
 ############################################################################################################################
@@ -392,9 +430,9 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     pdb_text = st.session_state.pdb_map[selected_design]
 
                     # Chain visibility + colors
-                    show_target = st.checkbox("Show Target Chain", value=True, key=f"show_target_{selected_design}")
-                    show_binder = st.checkbox("Show Binder Chain", value=True, key=f"show_binder_{selected_design}")
-                    highlight_binding = st.checkbox("Highlight binding spot", value=True,
+                    show_target = st.checkbox("Show Target", value=True, key=f"show_target_{selected_design}")
+                    show_binder = st.checkbox("Show Binder", value=True, key=f"show_binder_{selected_design}")
+                    highlight_binding = st.checkbox("Highlight binding spots", value=True,
                                                     key=f"highlight_{selected_design}")
                     if highlight_binding:
                         show_sphere = st.checkbox("Show CPK sphere", value=False, key=f"show_sphere_{selected_design}")
@@ -551,7 +589,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     highlight_binding = st.checkbox("Highlight binding spots", value=True,
                                                     key=f"highlight_mc_{selected_design}")
                     if highlight_binding:
-                        show_sphere = st.checkbox("Show CPK sphere (Multi-chain)", value=False,
+                        show_sphere = st.checkbox("Show CPK sphere", value=False,
                                                   key=f"show_sphere_mc_{selected_design}")
 
                     color_t = st.selectbox("Target  Color",
@@ -566,7 +604,7 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     view = py3Dmol.view(width=900, height=500)
                     view.addModel(pdb_text, 'pdb')
 
-                    background_color = st.selectbox("Background Color Multitarget", ["black", "white", "grey", "cyan", "red"],
+                    background_color = st.selectbox("Background Color", ["black", "white", "grey", "cyan", "red"],
                                                     index=0,
                                                     key=f"background_color_{selected_design}")
                     view.setBackgroundColor(background_color)
@@ -681,9 +719,14 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
         st.markdown("")
         st.markdown('#### Contact plot for each design')
 
+        ###  changed df_out  to  df_display (tidy one)
+        df = st.session_state.df_display
+
         if df is not None and df.shape[0] > 0:
-            p = 'n_contacts_3A_Residues'
-            if df[p].sum() == 0:
+            #p = 'n_contacts_3A_Residues'
+            p = '(Target) Number of 3A contacts Residues'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  3Å_contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
@@ -693,8 +736,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts = px.bar(
                     df,
                     x='design_id',
-                    y='n_contacts_3A_Residues',
-                    title='Number of Contacts (3Å)'
+                    #y = 'n_contacts_3A_Residues',
+                    y='(Target) Number of 3A contacts Residues',
+                    title='Number of target residues that have 3Å Contacts ',
+                    labels={
+                        p: 'Number of 3Å Contacts', 'design_id': 'Design id'
+                    }
                 )
 
                 fig_contacts.update_traces(width=bar_width)
@@ -704,8 +751,10 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            p = 'n_contacts_4A_Residues'
-            if df[p].sum() == 0:
+            #p = 'n_contacts_4A_Residues'
+            p = '(Target) Number of 4A contacts Residues'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  4Å_contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
@@ -715,8 +764,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts = px.bar(
                     df,
                     x='design_id',
-                    y='n_contacts_4A_Residues',
-                    title='Number of Contacts (4Å)'
+                    #y='n_contacts_4A_Residues',
+                    y='(Target) Number of 4A contacts Residues',
+                    title='Number of target residues that have 4Å Contacts ',
+                    labels={
+                        p: 'Number of 4Å Contacts', 'design_id': 'Design id'
+                    }
                 )
 
                 fig_contacts.update_traces(width=bar_width)
@@ -726,8 +779,10 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            p = 'n_hydrophobic_contacts_Residues'
-            if df[p].sum() == 0:
+            #p = 'n_hydrophobic_contacts_Residues'
+            p = '(Target) Number of hydrophobic contacts Residues'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  hydrophobic_contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
@@ -736,8 +791,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts = px.bar(
                     df,
                     x='design_id',
-                    y='n_hydrophobic_contacts_Residues',
-                    title='Number of hydrophobic Contacts '
+                    #y='n_hydrophobic_contacts_Residues',
+                    y='(Target) Number of hydrophobic contacts Residues',
+                    title='Number of target residues that have hydrophobic Contacts ',
+                    labels = {
+                        p : 'Number of hydrophobic Contacts', 'design_id' : 'Design id'
+                    }
                 )
                 fig_contacts.update_yaxes(
                     tickformat=",d",  # Formats numbers as integers
@@ -749,8 +808,10 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            p = 'n_salt_bridge_Residues'
-            if df[p].sum() == 0:
+           # p = 'n_salt_bridge_Residues'
+            p = '(Target) Number of salt bridge contacts Residues'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  salt_bridge contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
@@ -759,8 +820,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts = px.bar(
                     df,
                     x='design_id',
-                    y='n_salt_bridge_Residues',
-                    title='Number of salt bridge contacts '
+                    #y='n_salt_bridge_Residues',
+                    y='(Target) Number of salt bridge contacts Residues',
+                    title='Number of target residues that have salt bridge Contacts ',
+                    labels={
+                        p: 'Number of salt bridge Contacts', 'design_id': 'Design id'
+                    }
                 )
                 fig_contacts.update_traces(width=bar_width)
                 st.plotly_chart(fig_contacts, use_container_width=True)
@@ -769,9 +834,11 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            p = 'n_pi_pi_contacts'
-            if df[p].sum() == 0:
-                st.info(f"No  pi_pi_contacts  found (0 contacts) for the analyzed designs.")
+            #p = 'n_pi_pi_contacts'
+            p = '(Target) Number of pi-pi contacts'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
+                st.info(f"No pi_pi_contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
 
@@ -779,8 +846,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts_pi_pi = px.bar(
                     df,
                     x='design_id',
-                    y='n_pi_pi_contacts',
-                    title='Number of Pi_Pi contacts '
+                    #y='n_pi_pi_contacts',
+                    y='(Target) Number of pi-pi contacts',
+                    title='Number of target residues that have pi-pi Contacts ',
+                    labels={
+                        p: 'Number of pi-pi Contacts', 'design_id': 'Design id'
+                    }
                 )
                 fig_contacts_pi_pi.update_yaxes(
                     tickformat=",d",  # Formats numbers as integers
@@ -792,8 +863,10 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            p = 'n_cation_pi_contacts'
-            if df[p].sum() == 0:
+            #p = 'n_cation_pi_contacts'
+            p = '(Target) Number of cation-pi contacts'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  cation_pi_contacts  found (0 contacts) for the analyzed designs.")
             else:
                 n_designs = df.shape[0]
@@ -802,8 +875,12 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                 fig_contacts_cation_pi = px.bar(
                     df,
                     x='design_id',
-                    y='n_cation_pi_contacts',
-                    title='Number of Cation_Pi contacts '
+                   # y='n_cation_pi_contacts',
+                    y='(Target) Number of cation-pi contacts',
+                    title='Number of target residues that have cation-pi Contacts ',
+                    labels={
+                        p: 'Number of cation-pi Contacts', 'design_id': 'Design id'
+                    }
                 )
                 fig_contacts_cation_pi.update_yaxes(
                     tickformat=",d",  # Formats numbers as integers
@@ -817,14 +894,24 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
-            n_designs = df.shape[0]
+            p = 'Number of All H bonds'
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
+                st.info(f"No H-bonds found (0 contacts) for the analyzed designs.")
+            else:
+                n_designs = df.shape[0]
+
+            #n_designs = df.shape[0]
 
             bar_width = 0.1 if n_designs < 3 else (0.2 if n_designs <= 5 else 0.21)
             fig_contacts_hb = px.bar(
                 df,
                 x='design_id',
                 y='Number of All H bonds',
-                title='Number of all H bonds '
+                title='Number of All H bonds ',
+                labels={
+                    p: 'Number of Contacts', 'design_id': 'Design id'
+                }
             )
             fig_contacts_hb.update_yaxes(
                     tickformat=",d",  # Formats numbers as integers
@@ -943,7 +1030,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         if df is not None and df.shape[0] > 0:
             p = 'binder_hydrophobic_res_fraction'
-            if df[p].sum() == 0:
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  hydrophobic Residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
@@ -954,9 +1042,17 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_hydrophobic_res_fraction',
-                    title='        Binder Hydrophobicity for all designs (%)'
+                    title='        Binder Hydrophobicity for all designs (%)',
+                    labels={
+                        p: 'Percentage (%)', 'design_id': 'Design id'
+                    }
                 )
 
+                fig_contacts.update_yaxes(
+                    range=[0, 100],
+                    tickformat=",d",
+                    dtick=20
+                )
                 fig_contacts.update_traces(width=bar_width)
                 st.plotly_chart(fig_contacts, use_container_width=True)
         else:
@@ -965,7 +1061,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
         st.write("------------------------------------------------------------------------------------------")
         if df is not None and df.shape[0] > 0:
             p = 'binder_positive_res_fraction'
-            if df[p].sum() == 0:
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  Positive Charged Residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
@@ -976,9 +1073,17 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_positive_res_fraction',
-                    title='        Binder Basic Residues for all designs (%)'
+                    title='        Binder Basic Residues for all designs (%)',
+                    labels={
+                        p: 'Percentage (%)', 'design_id': 'Design id'
+                    }
                 )
 
+                fig_contacts_bc.update_yaxes(
+                    range=[0, 100],
+                    tickformat=",d",
+                    dtick=20
+                )
                 fig_contacts_bc.update_traces(width=bar_width)
                 st.plotly_chart(fig_contacts_bc, use_container_width=True)
         else:
@@ -988,7 +1093,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         if df is not None and df.shape[0] > 0:
             p = 'binder_negative_res_fraction'
-            if df[p].sum() == 0:
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  Negative Charged Residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
@@ -999,9 +1105,17 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_negative_res_fraction',
-                    title='        Binder Acidic Residues for all designs (%)'
+                    title='        Binder Acidic Residues for all designs (%)',
+                    labels={
+                        p: 'Percentage (%)', 'design_id': 'Design id'
+                    }
                 )
 
+                fig_contacts_ac.update_yaxes(
+                    range=[0, 100],
+                    tickformat=",d",
+                    dtick=20
+                )
                 fig_contacts_ac.update_traces(width=bar_width)
                 st.plotly_chart(fig_contacts_ac, use_container_width=True)
         else:
@@ -1011,7 +1125,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
 
         if df is not None and df.shape[0] > 0:
             p = 'binder_aromatic_res_fraction'
-            if df[p].sum() == 0:
+            counts = pd.to_numeric(df[p], errors='coerce').fillna(0)
+            if counts.sum() == 0:
                 st.info(f"No  Aromatic Residues  found  for the analyzed binder designs.")
             else:
                 n_designs = df.shape[0]
@@ -1022,9 +1137,16 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     df,
                     x='design_id',
                     y='binder_aromatic_res_fraction',
-                    title='        Binder Aromatic Residues for all designs (%)'
+                    title='        Binder Aromatic Residues for all designs (%)',
+                    labels={
+                        p:'Percentage (%)', 'design_id':'Design id'
+                    }
                 )
-
+                fig_contacts_ar.update_yaxes(
+                    range=[0, 100],
+                    tickformat=",d",
+                    dtick=20
+                )
                 fig_contacts_ar.update_traces(width=bar_width)
                 st.plotly_chart(fig_contacts_ar, use_container_width=True)
         else:
@@ -1063,8 +1185,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                         del dict_res[i + 1]
                 return dict_res
 
-            analysis_final_3A = analysis_final('3A_Residues')
-            analysis_final_4A = analysis_final('4A_Residues')
+            analysis_final_3A = analysis_final('Target 3A Residues')
+            analysis_final_4A = analysis_final('Target 4A Residues')
             analysis_final_hydrophobic = analysis_final('hydrophobic_contacts_Residues')
             analysis_final_salt_bridge = analysis_final('salt_bridge_contacts_Residues')
 
@@ -1550,7 +1672,8 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
                     x=residue_labels_hypho,
                     y=counts_hypho,
                     labels={"x": "Target Chain & Residue", "y": "Number of designs"},
-                    title="Frequency of target residues at the hydrophobic interface (Multi-Chain)"
+                    #title="Frequency of target residues at the hydrophobic interface (Multi-Chain)"
+                    title='Frequency of hydrophobic contacts at the interface'
                 )
 
                 fig_contacts_hypho.update_xaxes(
@@ -1664,47 +1787,58 @@ if st.session_state.analysis_done and st.session_state.df_out is not None:
         with col1:
 
             st.markdown("##### Designs Filtered by Selected Metric(s)")
-            filters = [ 'n_contacts_3A_Residues', 'n_contacts_4A_Residues',
-                       'Number of All H bonds','n_hydrophobic_contacts_ATOM', 'n_hydrophobic_contacts_Residues',
-                       'n_salt_bridge_ATOM', 'n_salt_bridge_Residues', 'n_pi_pi_contacts', 'n_cation_pi_contacts', 'binder_hydrophobic_res_fraction',
-                       'binder_hydrophobic_res_fraction_interface', 'binder_positive_res_fraction', 'binder_positive_res_fraction_interface',
-                       'binder_negative_res_fraction','binder_negative_res_fraction_interface','binder_aromatic_res_fraction',
-                       'binder_aromatic_res_fraction_interface']
+            # filters = [ 'n_contacts_3A_Residues', 'n_contacts_4A_Residues',
+            #            'Number of All H bonds','n_hydrophobic_contacts_ATOM', 'n_hydrophobic_contacts_Residues',
+            #            'n_salt_bridge_ATOM', 'n_salt_bridge_Residues', 'n_pi_pi_contacts', 'n_cation_pi_contacts', 'binder_hydrophobic_res_fraction',
+            #            'binder_hydrophobic_res_fraction_interface', 'binder_positive_res_fraction', 'binder_positive_res_fraction_interface',
+            #            'binder_negative_res_fraction','binder_negative_res_fraction_interface','binder_aromatic_res_fraction',
+            #            'binder_aromatic_res_fraction_interface']
 
-            df_final = st.session_state.df_out.copy()
+            filters = ['(Target) Number of 3A contacts Atoms', '(Target) Number of 3A contacts Residues', '(Target) Number of 4A contacts Atoms',
+                                                  '(Target) Number of 4A contacts Residues', '(Target) Number of hydrophobic contacts Atoms',
+                                                  '(Target) Number of hydrophobic contacts Residues',
+                                                  '(Target) Number of salt bridge contacts Atoms','(Target) Number of salt bridge contacts Residues',
+                                                  '(Target) Number of pi-pi contacts','(Target) Number of cation-pi contacts', 'Number of All H bonds']
+
+            #df_final = st.session_state.df_out.copy()
+            df_final = st.session_state.df_display.copy()
 
             for filter in filters:
                 show_filter = st.checkbox(filter, value=False)
                 df_final[filter] = pd.to_numeric(df_final[filter], errors='coerce')
                 if show_filter:
-                    if ('pLDDT' in filter):
-                        cutoff = st.slider("choose your cutoff (%) : ", 0, 100, 70, key=f"slider_{filter}")
-                        cutoff = cutoff / 100
-                        df_final = df_final[df_final[filter] >= cutoff]
+                    # if ('pLDDT' in filter):
+                    #     cutoff = st.slider("choose your cutoff (%) : ", 0, 100, 70, key=f"slider_{filter}")
+                    #     cutoff = cutoff / 100
+                    #     df_final = df_final[df_final[filter] >= cutoff]
 
-                    elif ('fraction' in filter):
-                        cutoff = st.slider("Choose your cutoff (%)  : ", 0, 100, 5, key=f"slider_{filter}")
-                        df_final = df_final[df_final[filter] >= cutoff]
+                    # elif ('fraction' in filter):
+                    #     cutoff = st.slider("Choose your cutoff (%)  : ", 0, 100, 5, key=f"slider_{filter}")
+                    #     df_final = df_final[df_final[filter] >= cutoff]
 
 
-                    elif ('3A' in filter) or ('4A' in filter):
+                    if ('3A' in filter) or ('4A' in filter):
                         cutoff = st.slider("Choose your cutoff   : ", 0, 100, 5, key=f"slider_{filter}")
                         df_final = df_final[df_final[filter] >= cutoff]
 
-                    elif ('pi_contacts' in filter):
+                    if ('pi-pi'in filter) or ('cation-pi' in filter):
                         cutoff = st.slider("Choose your cutoff   : ", 0, 10, 0, key=f"slider_{filter}")
                         df_final = df_final[df_final[filter] >= cutoff]
 
-                    elif ('binder' in filter):
-                        cutoff = st.slider("Choose your cutoff (%)   : ", 0, 100, 5, key=f"slider_{filter}")
-                        df_final = df_final[df_final[filter] >= cutoff]
+                    # elif ('binder' in filter):
+                    #     cutoff = st.slider("Choose your cutoff (%)   : ", 0, 100, 5, key=f"slider_{filter}")
+                    #     df_final = df_final[df_final[filter] >= cutoff]
 
 
-                    elif (filter == 'n_hydrophobic_contacts_ATOM') or (filter == 'n_hydrophobic_contacts_Residues') or (filter == 'n_salt_bridge_ATOM') or (filter ==  'n_salt_bridge_Residues'):
+                    # elif (filter == 'n_hydrophobic_contacts_ATOM') or (filter == 'n_hydrophobic_contacts_Residues') or (filter == 'n_salt_bridge_ATOM') or (filter ==  'n_salt_bridge_Residues'):
+                    #     cutoff = st.slider("Choose your cutoff   : ", 0, 100, 5, key=f"slider_{filter}")
+                    #     df_final = df_final[df_final[filter] >= cutoff]
+
+                    if ('hydrophobic' in filter) or  ('salt bridge' in filter):
                         cutoff = st.slider("Choose your cutoff   : ", 0, 100, 5, key=f"slider_{filter}")
                         df_final = df_final[df_final[filter] >= cutoff]
 
-                    elif "H bonds" in filter:
+                    if "H bonds" in filter:
                         cutoff = st.slider("Choose your cutoff   : ", 0, 20, 1, key=f"slider_{filter}")
                         df_final = df_final[df_final[filter] >= cutoff]
                    
